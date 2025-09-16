@@ -1,14 +1,16 @@
 
 import './App.css'
+import AppNavbar from './AppNavBar'
+
 
 function App() {
- 
 
   return (
     <>
-      <h1>shoes shop</h1>
+      <AppNavbar />
+      
     </>
-  )
+  );
 }
 
-export default App
+export default App;
