@@ -18,10 +18,10 @@ function AppNavbar(){
                 <Link to={'/'}>Home</Link>
                 </Nav.Link>
               <Nav.Link >
-               <Link to={'/detail'}>Home</Link>
+               <Link to={'/detail'}>Detail</Link>
                 </Nav.Link>
               <Nav.Link >
-                <Link to={'/cart'}>Home</Link>
+                <Link to={'/cart'}>cart</Link>
                 </Nav.Link>
             </Nav>
           </Container>
