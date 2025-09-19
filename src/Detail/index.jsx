@@ -1,85 +1,41 @@
-// src/Detail/index.jsx
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import Discount from "../Discount";
-import Nav from "react-bootstrap/Nav";
-import TabContent from "../TabContent";
+import "./App.css";
+import AppNavBar from "./AppNavBar";
+import data from "./data/data";
+import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import Detail from "./Detail";
+import About from "./About";
+import Home from "./Home";
+import Cart from "./Cart";
 
-function Detail({product}){
-  let [detailFade, setDetailFade] = useState('');
-  const [showAlert, setShowAlert] = useState(true);
 
-  const [inputData, setInputData] = useState('');
-  const [state, setState] = useState(false);
+function App() {
+  // 상품정보를 갖는 product 스테이트를 만든다.
+  const [product, setProduct] = useState(data);
 
-  const [tabState, setTabState] = useState(0);
-
-  useEffect(()=>{
-    const timer = setTimeout(() => setDetailFade('ani_end'), 100);
-    return ()=>{ clearTimeout(timer); setDetailFade(''); }
-  },[]);
-
-  useEffect(()=>{
-    const myTimer = setTimeout(()=> setShowAlert(false), 2000);
-    return ()=> clearTimeout(myTimer);
-  }, []);
-
-  useEffect(()=>{
-    if(isNaN(inputData)) setState(true); else setState(false);
-  }, [inputData]);
-
-  let {id} = useParams();
-  const navigate = useNavigate();
-
-  const findProduct = product.find(item => item.id === Number(id));
-
-  if(findProduct == null){
-    alert('찾는 상품이 없습니다.');
-    navigate(-1);
-    return null;
-  }
-
-  return(
-    <div className={`container ani_start ${detailFade}`}>
-      <div className="container mt-2">
-        {showAlert && <Discount />}
-      </div>
-
-      <div className="row">
-        <div className="col-md-6">
-          <img src={`/images/shoes${findProduct.id+1}.jpg`} width="100%" alt={findProduct.title}/>
-        </div>
-        <div className="col-md-6">
-          <h4 className="pt-5">{findProduct.title}</h4>
-          <p>{findProduct.content}</p>
-          {/* {state && <div>오류</div>}
-          <p>수량 :
-            <input type="text" onChange={(e)=>{setInputData(e.target.value)}}/>
-          </p> */}
-          <p>{findProduct.price}</p>
-          <button className="btn btn-danger">주문하기</button>
-        </div>
-      </div>
-
-      {/* ✅ 리뷰 탭 포함 */}
-      <Nav variant="tabs" activeKey={`link-${tabState}`} className="mt-3">
-        <Nav.Item>
-          <Nav.Link eventKey="link-0" onClick={()=>setTabState(0)}>특징</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="link-1" onClick={()=>setTabState(1)}>사이즈</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="link-2" onClick={()=>setTabState(2)}>배송</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="link-3" onClick={()=>setTabState(3)}>리뷰</Nav.Link>
-        </Nav.Item>
-      </Nav>
-
-      {/* 선택한 탭 콘텐츠 */}
-      <TabContent tabState={tabState} id={findProduct.id} />
-    </div>
-  )
+  return (
+    <>
+      {/* 네비게이션 바 영역 시작 */}
+      <AppNavBar />
+      {/* 네비게이션 바 영역 끝 */}
+      
+      {/* Routing 정보를 한꺼번에 모아놓는 장소 */}
+      {/* 스프링에서 사용하는 컨트롤러 클래스 */}
+      <Routes>
+        <Route path="/" element={<Home product={product} setProduct={setProduct}/>} />
+        {/* /detail/2 -> PathVariable 설정 법 */}
+        <Route path="/detail/:id" element={<Detail product={product}/>} />
+        <Route path="/cart" element={<Cart />} />
+        {/* 중첩라우팅 처리 */}
+        <Route path="/about" element={<About/>}>
+          {/* /about/member */}
+          <Route path="member" element={<div>Member Page</div>}></Route>
+          <Route path="location" element={<div>Location Page</div>}></Route>
+        </Route>
+        <Route path="*" element={<div>Page Not Found 404 Error</div>}></Route>
+      </Routes>
+    </>
+  );
 }
-export default Detail;
+
+export default App;
