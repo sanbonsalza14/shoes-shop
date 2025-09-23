@@ -10,18 +10,48 @@ import { Link, useNavigate } from "react-router-dom";
 // import { useContext } from "react";
 
 import userStore from "../store/userStore";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import { useState } from "react";
 
 function AppNavBar(){
   // const {loginUser} = useContext(UserContext);
   // console.log(loginUser)
 
   // store에서 정보 가져오기(zustand 사용)
-  const {userName, productStock} = userStore();
+  const {userName, productStock, productName, changeName, addProduct} 
+          = userStore();
 
-  console.log(userName);
-  console.log(productStock);
+  // console.log(productName);
+  // console.log(productStock);
+  // 로그인 정보를 담을 스테이트 선언
+  const [userInfo, setUserInfo] = useState(undefined);
 
   const navigate = useNavigate();
+
+  const auth = getAuth();
+  const provider = new GoogleAuthProvider();
+  const handelAuth = () => {
+    signInWithPopup(auth, provider)
+    .then((result) => {
+      // The signed-in user info.
+      const user = result.user;
+      // console.log(user)
+      setUserInfo(user)
+    }).catch((error) => {
+      console.log(error)
+    });
+  }
+
+  const handleLogOut = () => {
+    signOut(auth)
+    .then(()=> {
+      setUserInfo(undefined);
+      navigate("/");
+    })
+    .catch((error)=>{
+      console.log(error)
+    })
+  }
 
   return (
     <>
@@ -31,7 +61,12 @@ function AppNavBar(){
             <Navbar.Brand>Muzinjang</Navbar.Brand>
             <Nav className="me-auto">
               <Nav.Link onClick={()=>{navigate('/')}}>Home</Nav.Link>
-              <Nav.Link onClick={()=>{navigate('/cart')}}>Cart</Nav.Link>
+
+              {userInfo && (
+                <Nav.Link onClick={()=>{navigate('/cart')}}>Cart</Nav.Link>
+              )}
+
+              <Nav.Link onClick={()=>{navigate('/recent')}}>Recent</Nav.Link>
               <Nav.Link onClick={()=>{navigate('/about')}}>About</Nav.Link>
               <NavDropdown title="Info" id="basic-nav-dropdown">
                 <NavDropdown.Item onClick={()=>{navigate('/about/member')}}>Member</NavDropdown.Item>
@@ -39,7 +74,30 @@ function AppNavBar(){
               </NavDropdown>
             </Nav>
             <Nav className="ms-auto align-items-center">
-              <Nav.Link as="span">{`${userName}님 로그인 됨.`}</Nav.Link>
+              {
+                userInfo? (
+                  <div className="d-flex align-item-center userInfoArea">
+                    <img 
+                      src={userInfo.photoURL}
+                      alt={userInfo.displayName}
+                      className="userImage"
+                    />
+                    <span className="me-3 text-light small">
+                      {userInfo.email || userInfo.displayName}
+                    </span>
+                    <Nav.Link onClick={handleLogOut}>LogOut</Nav.Link>
+                  </div>
+                ) : (
+                  <Nav.Link onClick={handelAuth}>LogIn</Nav.Link>
+                )
+              }
+              {/* <Nav.Link as="span" 
+                  onClick={()=>{
+                    changeName()
+                    addProduct('르무통', 5)
+                  }}  >
+                  유저변경</Nav.Link>
+              <Nav.Link as="span">{`${userName}님 로그인 됨.`}</Nav.Link> */}
             </Nav>
           </Container>
         </Navbar>

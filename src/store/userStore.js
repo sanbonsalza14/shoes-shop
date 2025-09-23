@@ -12,8 +12,20 @@ const userStore = create((set)=>(
       userName: '장원영'
     })),
     
-    addProductName: ()=> set((state)=>(
-      { productName: [...productName, '고무신']}
+    addProduct: ()=> set((state)=>(
+      // state.productName : 이전 값
+      { 
+        productName: [... state.productName, '고무신'],
+        productStock: [... state.productStock, 1]
+      }
+    )),
+    // 오버로딩 지원않음. --> 나중것이 쓰임
+    addProduct: (name, stock=1)=> set((state)=>(
+      // state.productName : 이전 값
+      { 
+        productName: [... state.productName, name],
+        productStock: [... state.productStock, stock]
+      }
     )),
   }
 ));

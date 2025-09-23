@@ -2,7 +2,6 @@ import { productFeatures } from "../data/productFeatures";
 
 export default function DetailInfo({id}) {
   const features = productFeatures[id] ?? productFeatures.default;
-  console.log(features)
   return (
     <div className="section-card mt-3">
       <h5>이 제품이 좋은 이유</h5>
